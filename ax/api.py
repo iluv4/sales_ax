@@ -21,6 +21,7 @@ from .legacy import campaign_config, research_prompt, compose_body
 from .timeline import lead_timeline
 from .sheet_import import read_csv, plan, import_snapshot, PIPELINE_COLUMNS, HISTORY_COLUMNS
 from .analytics import funnel as cohort_funnel
+from .seed import load as load_seed
 
 ROOT=Path(__file__).resolve().parents[1]
 
@@ -441,14 +442,10 @@ def create_app(db_path=None,gmail_factory=None):
     def index(): return FileResponse(ROOT/'web'/'index.html')
     app.mount('/static',StaticFiles(directory=ROOT/'web'),name='static')
 
-    # Serverless storage resets on cold start: reload the sheet snapshot kept in encrypted env vars (never in git).
-    seed=os.getenv('SALES_AX_SEED_PIPELINE_B64','')
+    # Serverless storage resets on cold start: reload the sheet snapshot kept in an encrypted env var (never in git).
+    seed=os.getenv('SALES_AX_SEED_GZ_B64','')
     if seed and not db.one('SELECT id FROM campaigns LIMIT 1'):
-        history=os.getenv('SALES_AX_SEED_HISTORY_B64','')
-        snapshot={'pipeline':read_csv(base64.b64decode(seed).decode('utf-8-sig'),PIPELINE_COLUMNS),
-                  'history':read_csv(base64.b64decode(history).decode('utf-8-sig'),HISTORY_COLUMNS) if history else []}
-        cid=new_campaign(Campaign(name=os.getenv('SALES_AX_SEED_CAMPAIGN','기존 통합 시트 (시연용 스냅샷)'),product='모범AI 교육·AX',value_prop='기존 영업 시트에서 가져온 리드'))['id']
-        import_snapshot(wf,snapshot,cid)
+        load_seed(wf,lambda name,product,value_prop:new_campaign(Campaign(name=name,product=product,value_prop=value_prop))['id'],seed)
     return app
 
 

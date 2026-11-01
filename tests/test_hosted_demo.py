@@ -55,14 +55,32 @@ def test_local_mode_unchanged(tmp_path,monkeypatch):
         assert c.get('/api/status').json()['mode']=='LOCAL_SINGLE_OPERATOR'
 
 
-def test_seed_snapshot_loads_once_on_cold_start(tmp_path,monkeypatch):
-    from test_crm_import import PIPELINE,HISTORY
+# Fictional rows shaped like the real exports (세무사 70명 tab, 파트너지원 landing form). No real customer data.
+TAX='''번호,회사,대상,이메일,전문분야,개인화근거,맞춤협업가설,발송준비상태,중복발송상태,출처등급,근거URL,제목,본문,첨부 PDF,Gmail 초안,진행 상태
+1,가상세무법인,김가상,tax@example.com,쇼핑몰,"근거
+여러 줄",가설,초안 작성 가능,신규,official,https://example.com,제목,"본문
+여러 줄",,,초안 완료
+,,,,,,,,,,,,,,,
+'''
+PARTNER='''접수 시각,이름,연락처,전문 업종,실무 경력,채널·포트폴리오 링크,한 줄 소개,개인정보 동의,광고성 정보 수신 동의,유입 페이지
+2026-10-21 1:44:01,[테스트] 연동확인,01000000000,기타,,,테스트,동의,미동의,local-test
+2026-10-21 9:23:11,이가상,010-1111-2222,학원·교육,3년 미만,https:// www.example.org/,,동의,미동의,landing
+2026-10-26 17:52:14,이가상,01011113333,학원·교육,3년 미만,,"두 줄
+소개",동의,동의,landing
+2026-10-28 16:31:59,E2E 점검 (삭제 예정),01000000000,기타,,,,동의,미동의,landing
+'''
+
+
+def test_seed_builds_two_campaigns_and_loads_once_on_cold_start(tmp_path,monkeypatch):
+    from ax.seed import tax_campaign,partner_campaign,encode
+    campaigns=[tax_campaign(TAX),partner_campaign(PARTNER)]
+    assert [len(c['pipeline']) for c in campaigns]==[1,1]
+    partner=campaigns[1]['pipeline'][0]
+    assert partner['리드ID']=='PTN-20261026175214' and partner['한 줄 소개']=='두 줄 소개' and '연락처' not in partner
     monkeypatch.setenv('SALES_AX_PRIVATE_DIR',str(tmp_path/'private'))
     monkeypatch.delenv('SALES_AX_PUBLIC_HOST',raising=False)
-    monkeypatch.setenv('SALES_AX_SEED_PIPELINE_B64',base64.b64encode(PIPELINE.encode()).decode())
-    monkeypatch.setenv('SALES_AX_SEED_HISTORY_B64',base64.b64encode(HISTORY.encode()).decode())
+    monkeypatch.setenv('SALES_AX_SEED_GZ_B64',encode(campaigns))
     for _ in range(2):
         with TestClient(create_app(tmp_path/'seed.db',lambda:(_ for _ in ()).throw(ValueError('no gmail')))) as c:
-            assert len(c.get('/api/campaigns').json())==1
-            leads=c.get('/api/leads').json()
-            assert sorted(l['name'] for l in leads)==['가상고객','이메일없는고객']
+            assert len(c.get('/api/campaigns').json())==2
+            assert sorted(l['name'] for l in c.get('/api/leads').json())==['김가상','이가상']
