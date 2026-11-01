@@ -1,0 +1,229 @@
+[
+  {
+    "id": "01-dashboard",
+    "route": "dashboard",
+    "title": "영업의 모든 흐름, 한눈에",
+    "desktop": {
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "01-dashboard-desktop.jpg",
+      "height": 900,
+      "mainText": "SALES AX WORKSPACE\n\n영업의 모든 흐름, 한눈에\n\n검증된 고객 발굴부터 초안 검수, 실제 미팅 완료까지 연결하세요.\n\n+ 캠페인 만들기\n◇\n발송 전, 한 번 더 확인하세요.\nGmail 초안과 PDF를 검수한 뒤 사람이 승인합니다. 이 개발 릴리스에서는 실제 발송이 비활성화되어 있습니다.\n♧\n고유 연락처\n0명\n캠페인 간 중복을 제외한 Contact ID\n▤\n검토할 초안\n0건\n로컬 초안 · Gmail 검증 상태 확인\n▦\n미팅 예약\n0명\n실제 완료와 구분하여 집계\n✓\n실제 미팅 완료\n0명\n담당자가 회의록으로 확인한 고객\n고객 전환 퍼널\n\n고객 인원 기준으로 보는 영업 진행 현황\n\n전체 분석 ↗\n0\n발송 고객\n0\n유효 주소\n0\n사람 회신\n0\n긍정 회신\n0\n미팅 예약\n0\n실제 완료\n현재 로컬 DB 전체 / 고유 Contact ID / 전체 기간\n활동 발생일 · 기간 필터 미적용 · 발송 이벤트 수와 초안 수는 인원수에 포함하지 않습니다.\n지금 확인할 항목\n\n다음 단계로 넘어가기 전 검토가 필요해요.\n\n!\n연락처 검증 필요\n0\n▤\nQA 보류 초안\n0\n✓\n검수 승인 완료\n0\n초안 검수함으로 이동 →\n최근 등록한 고객\n\n출처와 연락처를 검증하고 다음 액션을 준비하세요.\n\n전체 고객 보기 ↗\n◌\n아직 등록된 고객이 없습니다.\n캠페인을 만든 뒤 공개 출처가 있는 고객을 추가하세요.\n첫 캠페인 만들기",
+      "scrollHeight": 1388,
+      "scrollWidth": 1425,
+      "width": 1440
+    },
+    "mobile": {
+      "file": "01-dashboard-mobile.jpg",
+      "heading": "영업의 모든 흐름, 한눈에",
+      "height": 844,
+      "mainText": "SALES AX WORKSPACE\n\n영업의 모든 흐름, 한눈에\n\n검증된 고객 발굴부터 초안 검수, 실제 미팅 완료까지 연결하세요.\n\n+ 캠페인 만들기\n◇\n발송 전, 한 번 더 확인하세요.\nGmail 초안과 PDF를 검수한 뒤 사람이 승인합니다. 이 개발 릴리스에서는 실제 발송이 비활성화되어 있습니다.\n♧\n고유 연락처\n0명\n캠페인 간 중복을 제외한 Contact ID\n▤\n검토할 초안\n0건\n로컬 초안 · Gmail 검증 상태 확인\n▦\n미팅 예약\n0명\n실제 완료와 구분하여 집계\n✓\n실제 미팅 완료\n0명\n담당자가 회의록으로 확인한 고객\n고객 전환 퍼널\n\n고객 인원 기준으로 보는 영업 진행 현황\n\n전체 분석 ↗\n0\n발송 고객\n0\n유효 주소\n0\n사람 회신\n0\n긍정 회신\n0\n미팅 예약\n0\n실제 완료\n현재 로컬 DB 전체 / 고유 Contact ID / 전체 기간\n활동 발생일 · 기간 필터 미적용 · 발송 이벤트 수와 초안 수는 인원수에 포함하지 않습니다.\n지금 확인할 항목\n\n다음 단계로 넘어가기 전 검토가 필요해요.\n\n!\n연락처 검증 필요\n0\n▤\nQA 보류 초안\n0\n✓\n검수 승인 완료\n0\n초안 검수함으로 이동 →\n최근 등록한 고객\n\n출처와 연락처를 검증하고 다음 액션을 준비하세요.\n\n전체 고객 보기 ↗\n◌\n아직 등록된 고객이 없습니다.\n캠페인을 만든 뒤 공개 출처가 있는 고객을 추가하세요.\n첫 캠페인 만들기",
+      "nav": {
+        "clientWidth": 343,
+        "scrollWidth": 564
+      },
+      "overflowingElements": [],
+      "scrollHeight": 2057,
+      "scrollWidth": 375,
+      "width": 390
+    }
+  },
+  {
+    "id": "02-lead-discovery-crm",
+    "route": "leads",
+    "title": "고객 발굴",
+    "desktop": {
+      "file": "02-lead-discovery-crm-desktop.jpg",
+      "heading": "고객 발굴",
+      "height": 900,
+      "mainText": "SALES AX WORKSPACE\n\n고객 발굴\n\n공개 업무용 연락처, 검증 근거, ICP 적합도를 함께 관리합니다.\n\nCSV 가져오기\n+ 고객 추가\n0개 리드 · 0명 고유 연락처\n◌\n고객을 직접 추가하거나 UTF-8 CSV를 가져오세요.\nCSV 열: name, company, email, title, domain, source_url",
+      "scrollHeight": 900,
+      "scrollWidth": 1440,
+      "width": 1440
+    },
+    "mobile": {
+      "file": "02-lead-discovery-crm-mobile.jpg",
+      "heading": "고객 발굴",
+      "height": 844,
+      "mainText": "SALES AX WORKSPACE\n\n고객 발굴\n\n공개 업무용 연락처, 검증 근거, ICP 적합도를 함께 관리합니다.\n\nCSV 가져오기\n+ 고객 추가\n0개 리드 · 0명 고유 연락처\n◌\n고객을 직접 추가하거나 UTF-8 CSV를 가져오세요.\nCSV 열: name, company, email, title, domain, source_url",
+      "nav": {
+        "clientWidth": 343,
+        "scrollWidth": 564
+      },
+      "overflowingElements": [],
+      "scrollHeight": 983,
+      "scrollWidth": 375,
+      "width": 390
+    }
+  },
+  {
+    "id": "03-campaigns",
+    "route": "campaigns",
+    "title": "캠페인",
+    "desktop": {
+      "file": "03-campaigns-desktop.jpg",
+      "heading": "캠페인",
+      "height": 900,
+      "mainText": "SALES AX WORKSPACE\n\n캠페인\n\n영업 모션과 ICP를 정의하고 고객군별로 메시지를 관리합니다.\n\n+ 캠페인 만들기\n◌\n영업 캠페인부터 만들어 주세요.",
+      "scrollHeight": 900,
+      "scrollWidth": 1440,
+      "width": 1440
+    },
+    "mobile": {
+      "file": "03-campaigns-mobile.jpg",
+      "heading": "캠페인",
+      "height": 844,
+      "mainText": "SALES AX WORKSPACE\n\n캠페인\n\n영업 모션과 ICP를 정의하고 고객군별로 메시지를 관리합니다.\n\n+ 캠페인 만들기\n◌\n영업 캠페인부터 만들어 주세요.",
+      "nav": {
+        "clientWidth": 343,
+        "scrollWidth": 564
+      },
+      "overflowingElements": [],
+      "scrollHeight": 983,
+      "scrollWidth": 375,
+      "width": 390
+    }
+  },
+  {
+    "id": "04-proposal-template-library",
+    "route": "templates",
+    "title": "템플릿 라이브러리",
+    "desktop": {
+      "file": "04-proposal-template-library-desktop.jpg",
+      "heading": "템플릿 라이브러리",
+      "height": 900,
+      "mainText": "SALES AX WORKSPACE\n\n템플릿 라이브러리\n\n기존 모범AI PPT의 원본과 변수맵을 보존합니다.\n\n+ 원본 PPTX 등록\n▧\n기존 디자인을 그대로 이어갑니다.\n원본 PPTX와 변수맵을 저장하는 연결 지점을 준비했습니다. 자동 PDF 변환은 아직 연결되지 않았으며 현재는 검증한 PDF를 직접 첨부합니다.\n18장 제안서 · 설득 단계\n\nLv1 / Lv2 / Lv3는 페이지별 설득 단계입니다.\n\nLv1\n인식 · 문제 · 개인화\n\n1, 2, 3, 5p\n\nLv2\n신뢰 · 가치 · 반론 대응\n\n4, 6, 7, 8, 9, 14, 16p\n\nLv3\n실행 · 조건 · 전환\n\n10, 11, 12, 13, 15, 17, 18p\n\n등록된 원본\n◌\n원본 제안서 PPTX를 등록해 주세요.",
+      "scrollHeight": 963,
+      "scrollWidth": 1425,
+      "width": 1440
+    },
+    "mobile": {
+      "file": "04-proposal-template-library-mobile.jpg",
+      "heading": "템플릿 라이브러리",
+      "height": 844,
+      "mainText": "SALES AX WORKSPACE\n\n템플릿 라이브러리\n\n기존 모범AI PPT의 원본과 변수맵을 보존합니다.\n\n+ 원본 PPTX 등록\n▧\n기존 디자인을 그대로 이어갑니다.\n원본 PPTX와 변수맵을 저장하는 연결 지점을 준비했습니다. 자동 PDF 변환은 아직 연결되지 않았으며 현재는 검증한 PDF를 직접 첨부합니다.\n18장 제안서 · 설득 단계\n\nLv1 / Lv2 / Lv3는 페이지별 설득 단계입니다.\n\nLv1\n인식 · 문제 · 개인화\n\n1, 2, 3, 5p\n\nLv2\n신뢰 · 가치 · 반론 대응\n\n4, 6, 7, 8, 9, 14, 16p\n\nLv3\n실행 · 조건 · 전환\n\n10, 11, 12, 13, 15, 17, 18p\n\n등록된 원본\n◌\n원본 제안서 PPTX를 등록해 주세요.",
+      "nav": {
+        "clientWidth": 343,
+        "scrollWidth": 564
+      },
+      "overflowingElements": [],
+      "scrollHeight": 1427,
+      "scrollWidth": 375,
+      "width": 390
+    }
+  },
+  {
+    "id": "05-email-workspace",
+    "route": "review",
+    "title": "제안 · 초안 검수함",
+    "desktop": {
+      "file": "05-email-workspace-desktop.jpg",
+      "heading": "제안 · 초안 검수함",
+      "height": 900,
+      "mainText": "SALES AX WORKSPACE\n\n제안 · 초안 검수함\n\n고객 정보, 이메일, PDF를 함께 확인하고 현재 버전을 승인합니다.\n\n◌\n검토할 초안이 없습니다.\n고객 360°에서 근거를 등록하고 초안을 작성하세요.\n고객 목록으로 →",
+      "scrollHeight": 900,
+      "scrollWidth": 1440,
+      "width": 1440
+    },
+    "mobile": {
+      "file": "05-email-workspace-mobile.jpg",
+      "heading": "제안 · 초안 검수함",
+      "height": 844,
+      "mainText": "SALES AX WORKSPACE\n\n제안 · 초안 검수함\n\n고객 정보, 이메일, PDF를 함께 확인하고 현재 버전을 승인합니다.\n\n◌\n검토할 초안이 없습니다.\n고객 360°에서 근거를 등록하고 초안을 작성하세요.\n고객 목록으로 →",
+      "nav": {
+        "clientWidth": 343,
+        "scrollWidth": 564
+      },
+      "overflowingElements": [],
+      "scrollHeight": 983,
+      "scrollWidth": 375,
+      "width": 390
+    }
+  },
+  {
+    "id": "06-replies-meetings",
+    "route": "meetings",
+    "title": "회신 · 미팅",
+    "desktop": {
+      "file": "06-replies-meetings-desktop.jpg",
+      "heading": "회신 · 미팅",
+      "height": 900,
+      "mainText": "SALES AX WORKSPACE\n\n회신 · 미팅\n\n회신을 확인하고 예약과 실제 완료를 별도로 기록합니다.\n\n+ 미팅 예약 기록\n미팅 일정\nAsia/Seoul · 이메일 초대 자동 발송 없음\n◌\n예약된 미팅이 없습니다. 예약 기록만으로 완료 처리되지 않습니다.\n회신 기록\n◌\n가져온 회신이 없습니다.\n후속 영업 작업\n◌\n발신 기록을 연결하면 원본 영업 주기에 따라 후속 작업을 준비합니다.",
+      "scrollHeight": 900,
+      "scrollWidth": 1440,
+      "width": 1440
+    },
+    "mobile": {
+      "file": "06-replies-meetings-mobile.jpg",
+      "heading": "회신 · 미팅",
+      "height": 844,
+      "mainText": "SALES AX WORKSPACE\n\n회신 · 미팅\n\n회신을 확인하고 예약과 실제 완료를 별도로 기록합니다.\n\n+ 미팅 예약 기록\n미팅 일정\nAsia/Seoul · 이메일 초대 자동 발송 없음\n◌\n예약된 미팅이 없습니다. 예약 기록만으로 완료 처리되지 않습니다.\n회신 기록\n◌\n가져온 회신이 없습니다.\n후속 영업 작업\n◌\n발신 기록을 연결하면 원본 영업 주기에 따라 후속 작업을 준비합니다.",
+      "nav": {
+        "clientWidth": 343,
+        "scrollWidth": 564
+      },
+      "overflowingElements": [],
+      "scrollHeight": 1310,
+      "scrollWidth": 375,
+      "width": 390
+    }
+  },
+  {
+    "id": "07-analytics",
+    "route": "analytics",
+    "title": "성과 분석",
+    "desktop": {
+      "file": "07-analytics-desktop.jpg",
+      "heading": "성과 분석",
+      "height": 900,
+      "mainText": "SALES AX WORKSPACE\n\n성과 분석\n\n초안·발송 이벤트·고객 인원을 구분해 실제 전환을 확인합니다.\n\n실제 발송 고객\n0\n로컬 DB 전체 · 전체 기간\n사람 회신\n0\n로컬 DB 전체 · 전체 기간\n계약 고객\n0\n로컬 DB 전체 · 전체 기간\n확인된 매출\n0원\n로컬 DB 전체 · 전체 기간\n사람 기준 퍼널\n0\n발송 고객\n0\n유효 주소\n0\n사람 회신\n0\n긍정 회신\n0\n미팅 예약\n0\n실제 완료\n현재 로컬 DB 전체 / 고유 Contact ID / 전체 기간\n활동 발생일 · 기간 필터 미적용 · 발송 이벤트 수와 초안 수는 인원수에 포함하지 않습니다.\n명세서의 212명 퍼널과 9명 통합 DB는 별도 범위입니다. 실제 데이터가 가져와지기 전까지 로컬 실적으로 포함하지 않습니다. 기존 V1/V2만으로 A/B 성과를 판단하지 않습니다.",
+      "scrollHeight": 962,
+      "scrollWidth": 1425,
+      "width": 1440
+    },
+    "mobile": {
+      "file": "07-analytics-mobile.jpg",
+      "heading": "성과 분석",
+      "height": 844,
+      "mainText": "SALES AX WORKSPACE\n\n성과 분석\n\n초안·발송 이벤트·고객 인원을 구분해 실제 전환을 확인합니다.\n\n실제 발송 고객\n0\n로컬 DB 전체 · 전체 기간\n사람 회신\n0\n로컬 DB 전체 · 전체 기간\n계약 고객\n0\n로컬 DB 전체 · 전체 기간\n확인된 매출\n0원\n로컬 DB 전체 · 전체 기간\n사람 기준 퍼널\n0\n발송 고객\n0\n유효 주소\n0\n사람 회신\n0\n긍정 회신\n0\n미팅 예약\n0\n실제 완료\n현재 로컬 DB 전체 / 고유 Contact ID / 전체 기간\n활동 발생일 · 기간 필터 미적용 · 발송 이벤트 수와 초안 수는 인원수에 포함하지 않습니다.\n명세서의 212명 퍼널과 9명 통합 DB는 별도 범위입니다. 실제 데이터가 가져와지기 전까지 로컬 실적으로 포함하지 않습니다. 기존 V1/V2만으로 A/B 성과를 판단하지 않습니다.",
+      "nav": {
+        "clientWidth": 343,
+        "scrollWidth": 564
+      },
+      "overflowingElements": [],
+      "scrollHeight": 1247,
+      "scrollWidth": 375,
+      "width": 390
+    }
+  },
+  {
+    "id": "08-integrations-logs",
+    "route": "settings",
+    "title": "연동 · 실행 로그",
+    "desktop": {
+      "file": "08-integrations-logs-desktop.jpg",
+      "heading": "연동 · 실행 로그",
+      "height": 900,
+      "mainText": "SALES AX WORKSPACE\n\n연동 · 실행 로그\n\n외부 연결 상태와 업무 변경 이력을 확인합니다.\n\nGmail API\n\nOAuth 계정별 초안 생성 · PDF 첨부 · 재검증\n\nOAuth 설정 필요\n\n서버 환경변수 GMAIL_AUTHORIZED_USER_FILE에 저장소 밖의 authorized-user JSON 경로를 설정하세요. 권한은 gmail.compose와 gmail.readonly입니다.\n\n연결된 기존 스레드만 동기화합니다. 최초 발신은 고객 360°에서 발신 기록을 가져와 연결하세요.\n\n기존 스레드 동기화\nAI 리서치 어댑터\n미연결\n\n현재는 원본 sales의 Claude 리서치 어댑터를 선택적으로 사용할 수 있습니다. Codex에서 구현한 웹·검수 흐름은 AI 키 없이 동작합니다. 리서치 결과는 사람 확인 전 검증된 근거로 취급하지 않습니다.\n\n동기화 실행\n◌\n아직 실행된 동기화가 없습니다.\n감사 로그\n◌\n변경 이력이 없습니다.",
+      "scrollHeight": 1166,
+      "scrollWidth": 1425,
+      "width": 1440
+    },
+    "mobile": {
+      "file": "08-integrations-logs-mobile.jpg",
+      "heading": "연동 · 실행 로그",
+      "height": 844,
+      "mainText": "SALES AX WORKSPACE\n\n연동 · 실행 로그\n\n외부 연결 상태와 업무 변경 이력을 확인합니다.\n\nGmail API\n\nOAuth 계정별 초안 생성 · PDF 첨부 · 재검증\n\nOAuth 설정 필요\n\n서버 환경변수 GMAIL_AUTHORIZED_USER_FILE에 저장소 밖의 authorized-user JSON 경로를 설정하세요. 권한은 gmail.compose와 gmail.readonly입니다.\n\n연결된 기존 스레드만 동기화합니다. 최초 발신은 고객 360°에서 발신 기록을 가져와 연결하세요.\n\n기존 스레드 동기화\nAI 리서치 어댑터\n미연결\n\n현재는 원본 sales의 Claude 리서치 어댑터를 선택적으로 사용할 수 있습니다. Codex에서 구현한 웹·검수 흐름은 AI 키 없이 동작합니다. 리서치 결과는 사람 확인 전 검증된 근거로 취급하지 않습니다.\n\n동기화 실행\n◌\n아직 실행된 동기화가 없습니다.\n감사 로그\n◌\n변경 이력이 없습니다.",
+      "nav": {
+        "clientWidth": 343,
+        "scrollWidth": 564
+      },
+      "overflowingElements": [],
+      "scrollHeight": 1526,
+      "scrollWidth": 375,
+      "width": 390
+    }
+  }
+]
