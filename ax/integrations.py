@@ -6,7 +6,7 @@ from fastapi import HTTPException,UploadFile,File,Request
 from fastapi.responses import RedirectResponse,HTMLResponse
 from pydantic import BaseModel,Field
 from .db import now
-from .oauth import GoogleConnection
+from .oauth import GoogleConnection,BlobStore,hosted_store_ready
 from .gmail import GmailDraftClient
 from .documents import FeatPaperManualProvider,FeatPaperCsvProvider
 from .google_readonly import sync_calendar
@@ -16,10 +16,11 @@ from .analytics import documents
 def register(app,wf,custom_gmail=False):
     db=wf.db
     directory=Path(os.getenv('SALES_AX_PRIVATE_DIR',str(Path(__file__).resolve().parents[1]/'data'/'private')))
-    google=GoogleConnection(directory);app.state.google=google
+    hosted=bool(os.getenv('SALES_AX_PUBLIC_HOST'))
+    google=GoogleConnection(directory,store=BlobStore() if hosted and hosted_store_ready() else None);app.state.google=google
     if not custom_gmail:
         def factory():
-            if google.token_path.exists():
+            if google.has_token():
                 from googleapiclient.discovery import build
                 return GmailDraftClient(build('gmail','v1',credentials=google.credentials(),cache_discovery=False))
             return GmailDraftClient.configured()
@@ -51,7 +52,7 @@ def register(app,wf,custom_gmail=False):
     def start():
         url,secret=google.begin()
         response=__import__('fastapi').responses.JSONResponse({'authorization_url':url})
-        response.set_cookie('sales_ax_oauth',secret,httponly=True,samesite='lax',max_age=600,path='/api/integrations/google')
+        response.set_cookie('sales_ax_oauth',secret,httponly=True,samesite='lax',secure=hosted,max_age=600,path='/api/integrations/google')
         return response
 
     @app.get('/api/integrations/google/callback')

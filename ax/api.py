@@ -22,6 +22,7 @@ from .timeline import lead_timeline
 from .sheet_import import read_csv, plan, import_snapshot, PIPELINE_COLUMNS, HISTORY_COLUMNS
 from .analytics import funnel as cohort_funnel
 from .seed import load as load_seed
+from .oauth import hosted_store_ready
 
 ROOT=Path(__file__).resolve().parents[1]
 
@@ -129,7 +130,7 @@ def create_app(db_path=None,gmail_factory=None):
     db=DB(db_path or os.getenv('SALES_AX_DB',str(ROOT/'data'/'sales-ax.db')))
     wf=Workflow(db,gmail_factory or GmailDraftClient.configured)
     app.state.workflow=wf
-    # Hosted demo: one extra allowed host, every request behind a shared password, Google OAuth stays local-only.
+    # Hosted demo: one extra allowed host, every request behind a shared password; Google OAuth only with persistent encrypted storage.
     public_host=os.getenv('SALES_AX_PUBLIC_HOST','').strip().lower()
     demo_password=os.getenv('SALES_AX_DEMO_PASSWORD','')
     if public_host and len(demo_password)<12:raise RuntimeError('공개 데모에는 12자 이상의 SALES_AX_DEMO_PASSWORD가 필요합니다.')
@@ -151,8 +152,8 @@ def create_app(db_path=None,gmail_factory=None):
         if public_host:
             if not demo_authorized(request.headers.get('authorization','')):
                 return JSONResponse({'detail':'데모 비밀번호가 필요합니다.'},status_code=401,headers={'WWW-Authenticate':'Basic realm="Sales AX demo", charset="UTF-8"'})
-            if request.url.path.startswith('/api/integrations/google'):
-                return JSONResponse({'detail':'공개 데모에서는 Google 계정 연결을 막아 두었습니다. 로컬 앱에서 연결하세요.'},status_code=403)
+            if request.url.path.startswith('/api/integrations/google') and not hosted_store_ready():
+                return JSONResponse({'detail':'공개 데모의 Google 연결 저장소(Blob·암호화 키)가 설정되지 않았습니다.'},status_code=403)
         origin=request.headers.get('origin')
         if request.method not in ('GET','HEAD','OPTIONS') and origin and origin not in origins:
             return JSONResponse({'detail':'외부 출처 요청 차단'},status_code=403)

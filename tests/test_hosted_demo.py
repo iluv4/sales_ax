@@ -1,4 +1,5 @@
 import base64
+import json
 import pytest
 from fastapi.testclient import TestClient
 from ax.api import create_app
@@ -84,3 +85,34 @@ def test_seed_builds_two_campaigns_and_loads_once_on_cold_start(tmp_path,monkeyp
         with TestClient(create_app(tmp_path/'seed.db',lambda:(_ for _ in ()).throw(ValueError('no gmail')))) as c:
             assert len(c.get('/api/campaigns').json())==2
             assert sorted(l['name'] for l in c.get('/api/leads').json())==['김가상','이가상']
+
+
+class MemoryStore:
+    def __init__(self):self.items={}
+    def read(self,name):return self.items.get(name)
+    def write(self,name,data):self.items[name]=bytes(data)
+    def delete(self,name):self.items.pop(name,None)
+
+
+def test_oauth_callback_can_land_on_another_instance_and_never_replays(tmp_path,monkeypatch):
+    from cryptography.fernet import Fernet
+    from ax.oauth import GoogleConnection
+    monkeypatch.setenv('SALES_AX_PUBLIC_HOST',HOST)
+    monkeypatch.setenv('SALES_AX_TOKEN_KEY',Fernet.generate_key().decode())
+    seen={}
+    class FakeFlow:
+        code_verifier='verifier-123'
+        def __init__(self,**kwargs):seen.setdefault('kwargs',[]).append(kwargs)
+        def authorization_url(self,**kw):return 'https://accounts.google.com/o/oauth2/auth?x=1','state-1'
+        def fetch_token(self,code):seen['redirect']=self.redirect_uri
+        credentials=type('C',(),{'to_json':lambda self:'{"token": "dummy-token"}'})()
+    store=MemoryStore()
+    make=lambda:GoogleConnection(tmp_path/'unused',flow_factory=lambda *a,**k:FakeFlow(**k),account_reader=lambda c:'marketing@creatobi.com',store=store)
+    client={'web':{'client_id':'x','client_secret':'not-a-real-secret','auth_uri':'https://accounts.google.com/o/oauth2/auth','token_uri':'https://oauth2.googleapis.com/token'}}
+    assert make().configure(json.dumps(client))['redirect_uri']=='https://'+HOST+'/api/integrations/google/callback'
+    _,cookie=make().begin()
+    assert make().finish('state-1','code',cookie)=='marketing@creatobi.com'
+    assert seen['kwargs'][-1]['code_verifier']=='verifier-123' and seen['redirect'].startswith('https://'+HOST)
+    assert make().has_token() and all(b'dummy-token' not in v and b'not-a-real-secret' not in v for v in store.items.values())
+    assert not (tmp_path/'unused').exists()
+    with pytest.raises(ValueError):make().finish('state-1','code',cookie)
