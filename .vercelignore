@@ -1,0 +1,6 @@
+data/
+.env
+artifacts/
+docs/
+tests/
+vendor/*/tests/

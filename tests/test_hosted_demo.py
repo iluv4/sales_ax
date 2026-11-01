@@ -53,3 +53,16 @@ def test_local_mode_unchanged(tmp_path,monkeypatch):
     monkeypatch.delenv('SALES_AX_PUBLIC_HOST',raising=False)
     with TestClient(create_app(tmp_path/'app.db')) as c:
         assert c.get('/api/status').json()['mode']=='LOCAL_SINGLE_OPERATOR'
+
+
+def test_seed_snapshot_loads_once_on_cold_start(tmp_path,monkeypatch):
+    from test_crm_import import PIPELINE,HISTORY
+    monkeypatch.setenv('SALES_AX_PRIVATE_DIR',str(tmp_path/'private'))
+    monkeypatch.delenv('SALES_AX_PUBLIC_HOST',raising=False)
+    monkeypatch.setenv('SALES_AX_SEED_PIPELINE_B64',base64.b64encode(PIPELINE.encode()).decode())
+    monkeypatch.setenv('SALES_AX_SEED_HISTORY_B64',base64.b64encode(HISTORY.encode()).decode())
+    for _ in range(2):
+        with TestClient(create_app(tmp_path/'seed.db',lambda:(_ for _ in ()).throw(ValueError('no gmail')))) as c:
+            assert len(c.get('/api/campaigns').json())==1
+            leads=c.get('/api/leads').json()
+            assert sorted(l['name'] for l in leads)==['가상고객','이메일없는고객']
