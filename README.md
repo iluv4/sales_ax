@@ -1,5 +1,18 @@
 # Sales AX MVP
 
+## 2026-11-02 밤 기준 요약 (대표 시연용)
+
+| 항목 | 상태 |
+|---|---|
+| 배포 링크 | https://mobum-sales-ax-demo.vercel.app (비밀번호 보호, 비번은 로컬 `data/demo-link.txt`) |
+| 빠른 영업 | `/quick` — AI 웹검색으로 사람·공개 이메일 찾기 → 목록 저장 → 소개서 PDF 기반 개인화 메일 → Gmail **초안**(발송 안 함). CSV 내보내기 |
+| 리드 데이터 | 통합 시트 9명 + 세무사 70명 + 파트너 지원 4명 (Vercel 비공개 환경변수 `SALES_AX_SEED_GZ_B64`, `ax/seed.py`) |
+| Google | marketing@creatobi.com 연결(로컬·링크). 설정 화면 "보낸 메일·일정 전체 불러오기"로 보낸편지함·회신·캘린더 가져오기(`ax/gmail_import.py`) |
+| 저장 | 링크 서버는 재시작 시 DB 초기화 → 시드 재적재 + Gmail 자동 재동기화. 토큰·목록은 암호화해 Vercel Blob에 |
+| 환경변수(Vercel) | `SALES_AX_PUBLIC_HOST`, `SALES_AX_DEMO_PASSWORD`, `SALES_AX_TOKEN_KEY`, `BLOB_READ_WRITE_TOKEN`, `OPENAI_API_KEY`, 선택: `SALES_AX_SEARCH_MODEL`/`SALES_AX_WRITE_MODEL`(기본 gpt-4.1) |
+| 남은 일 | 구글 시트 직접 쓰기(drive.file 권한), 검색 속도·품질 개선(Exa/Perplexity 검토), marketing 계정으로 GitHub·Vercel 이전, 시연 후 비밀번호·노출된 API 키 교체 |
+
+
 모범AI Sales AX의 로컬 단일 사용자 개발 버전입니다. Codex에서 구현하며 `iluv4/sales`와 `iluv4/sales_saas_prompt`를 읽기 참조로 보존합니다.
 
 ## 실행
