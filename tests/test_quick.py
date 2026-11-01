@@ -78,3 +78,34 @@ def test_without_ai_key_search_says_so(tmp_path,monkeypatch):
         assert c.get('/api/quick/state').json()['ai_configured'] is False
         r=c.post('/api/quick/search',json={'query':'세무사'})
         assert r.status_code==503 and 'OPENAI_API_KEY' in r.json()['detail']
+
+
+def test_gmail_sent_import_creates_leads_and_replies(tmp_path):
+    from types import SimpleNamespace
+    from ax.db import DB
+    from ax.service import Workflow
+    from ax.gmail_import import import_sent
+    msgs={'m1':{'id':'m1','threadId':'t1','internalDate':'1761800000000','snippet':'안녕하세요','labelIds':['SENT'],
+               'payload':{'headers':[{'name':'To','value':'"홍길동" <hong@shop.co.kr>'},{'name':'From','value':'marketing@creatobi.com'},{'name':'Subject','value':'제안'},{'name':'Message-ID','value':'<m1@x>'}]}},
+          'm2':{'id':'m2','threadId':'t2','internalDate':'1761800000000','labelIds':['SENT'],
+               'payload':{'headers':[{'name':'To','value':'a@x.com, b@y.com'},{'name':'From','value':'marketing@creatobi.com'}]}},
+          'm3':{'id':'m3','threadId':'t3','internalDate':'1761800000000','labelIds':['SENT'],
+               'payload':{'headers':[{'name':'To','value':'team@creatobi.com'},{'name':'From','value':'marketing@creatobi.com'}]}}}
+    reply={'id':'r1','threadId':'t1','internalDate':'1761900000000','labelIds':['INBOX'],'snippet':'관심 있어요',
+           'payload':{'headers':[{'name':'From','value':'hong@shop.co.kr'},{'name':'To','value':'marketing@creatobi.com'},{'name':'In-Reply-To','value':'<m1@x>'}]}}
+    class Req:
+        def __init__(self,v):self.v=v
+        def execute(self):return self.v
+    class Messages:
+        def list(self,**kw):return Req({'messages':[{'id':k,'threadId':v['threadId']} for k,v in msgs.items()]})
+        def get(self,userId,id,**kw):return Req(msgs[id])
+    service=SimpleNamespace(users=lambda:SimpleNamespace(messages=lambda:Messages()))
+    client=SimpleNamespace(service=service,account=lambda:'marketing@creatobi.com',thread_messages=lambda t:[msgs.get('m1'),reply] if t=='t1' else [])
+    if True:
+        wf=Workflow(DB(tmp_path/'g.db'),lambda:client)
+        first=import_sent(wf,client)
+        assert (first['sent_imported'],first['replies_imported'],first['leads_created'],first['skipped'])==(1,1,1,2)
+        lead=wf.db.one('SELECT l.stage,c.email FROM leads l JOIN contacts c ON c.id=l.contact_id')
+        assert lead['email']=='hong@shop.co.kr' and lead['stage']=='IN_CONVERSATION'
+        again=import_sent(wf,client)
+        assert (again['sent_imported'],again['replies_imported'],again['leads_created'])==(0,0,0)

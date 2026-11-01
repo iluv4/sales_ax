@@ -39,11 +39,13 @@ class OpenAIWriter:
     """Responses API with optional web search; output constrained to a JSON schema."""
     def __init__(self):
         from openai import OpenAI
-        self.client=OpenAI();self.model=os.getenv('SALES_AX_OPENAI_MODEL','gpt-5')
+        # Non-reasoning models answer a web-search request several times faster than gpt-5; both are env-switchable.
+        self.client=OpenAI();self.search_model=os.getenv('SALES_AX_SEARCH_MODEL','gpt-4.1');self.write_model=os.getenv('SALES_AX_WRITE_MODEL','gpt-4.1')
     def __call__(self,prompt,schema,name,web=False):
-        response=self.client.responses.create(model=self.model,input=prompt,reasoning={'effort':'low'},
-            tools=[{'type':'web_search'}] if web else [],
-            text={'format':{'type':'json_schema','name':name,'schema':schema,'strict':True}})
+        model=self.search_model if web else self.write_model
+        extra={'reasoning':{'effort':'low'}} if model.startswith(('gpt-5','o')) else {}
+        response=self.client.responses.create(model=model,input=prompt,tools=[{'type':'web_search'}] if web else [],
+            text={'format':{'type':'json_schema','name':name,'schema':schema,'strict':True}},**extra)
         return json.loads(response.output_text)
 
 
@@ -94,13 +96,15 @@ def register(app,google,gmail_factory,writer_factory=None):
         prompt=(f'다음 조건에 맞는 한국의 실제 인물(전문가·인플루언서·사업가)을 웹에서 찾아 {data.count}명까지 알려주세요: "{data.query}".{limit}\n'
                 '각 사람마다 인스타그램 아이디(@ 없이), 대략의 팔로워 수, 공개된 연락 이메일, 웹사이트, 분야, '
                 '연락할 근거(최근 활동·강점 한두 문장), 근거를 확인한 출처 URL을 적으세요. '
-                '이메일은 프로필·웹사이트·공식 문서에 실제로 공개된 것만 적고, 찾지 못하면 빈 문자열로 두세요. 추측해서 만들지 마세요.')
+                '이메일은 프로필·웹사이트·공식 문서에 실제로 공개된 것만 적고, 찾지 못하면 빈 문자열로 두세요. 추측해서 만들지 마세요. '
+                'site:instagram.com 검색, 프로필 소개·링크트리·개인 웹사이트를 활용하세요. 실제 인물을 찾지 못한 칸은 만들지 말고, 안내 문구나 설명을 이름 칸에 넣지 마세요. 찾은 사람이 없으면 빈 배열을 돌려주세요.')
         found=ai(writer(),prompt,CANDIDATES,'candidates',web=True)['candidates']
         items=rows();seen={(r['instagram'] or '').lower() for r in items}|{(r['email'] or '').lower() for r in items}
         added=[]
         for c in found:
             handle=c['instagram'].strip().lstrip('@');email=c['email'].strip()
-            if not c['name'].strip() or (handle and handle.lower() in seen) or (email and email.lower() in seen):continue
+            # A row without any way to reach the person is the model narrating, not a lead.
+            if not c['name'].strip() or not (handle or email) or (handle and handle.lower() in seen) or (email and email.lower() in seen):continue
             if data.max_followers is not None and c['followers'] and c['followers']>data.max_followers:continue
             item={'id':secrets.token_hex(4),'name':c['name'].strip(),'instagram':handle,'followers':c['followers'],'email':email,
                   'website':c['website'].strip(),'category':c['category'].strip(),'evidence':c['evidence'].strip(),

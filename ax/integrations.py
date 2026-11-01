@@ -10,6 +10,7 @@ from .oauth import GoogleConnection,BlobStore,hosted_store_ready
 from .gmail import GmailDraftClient
 from .documents import FeatPaperManualProvider,FeatPaperCsvProvider
 from .google_readonly import sync_calendar
+from .gmail_import import import_sent
 from .analytics import documents
 
 
@@ -95,6 +96,21 @@ def register(app,wf,custom_gmail=False):
         except Exception:
             record('calendar','BLOCKED','동기화 실패 · OAuth/권한을 확인하세요.')
             raise HTTPException(503,'Calendar 동기화 실패. 실제 완료·계약·매출은 변경하지 않았습니다.')
+
+    def sync_all():
+        result=import_sent(wf,wf.gmail_factory())
+        record('gmail','REAL',f"보낸편지함 {result['sent_imported']}건 · 회신 {result['replies_imported']}건 가져옴")
+        from googleapiclient.discovery import build
+        result['calendar']=sync_calendar(wf,build('calendar','v3',credentials=google.credentials(),cache_discovery=False))
+        record('calendar','REAL','일정 읽기 전용 동기화 성공')
+        return result
+    app.state.sync_all=sync_all
+
+    @app.post('/api/integrations/google/sync-all')
+    def sync_all_route():
+        try:return sync_all()
+        except HTTPException:raise
+        except Exception:raise HTTPException(503,'Gmail·Calendar 가져오기 실패. Google 연결을 확인하세요. 메일은 보내거나 바꾸지 않았습니다.')
 
     @app.get('/api/integrations/calendar/unmatched')
     def unmatched():return db.rows("SELECT id,external_id,payload,imported_at FROM source_records WHERE provider='calendar_unmatched' AND lead_id IS NULL ORDER BY imported_at DESC")

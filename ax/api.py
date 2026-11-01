@@ -6,6 +6,7 @@ import io
 import json
 import os
 import sys
+import threading
 import zipfile
 from datetime import datetime
 from pathlib import Path
@@ -451,6 +452,12 @@ def create_app(db_path=None,gmail_factory=None):
     seed=os.getenv('SALES_AX_SEED_GZ_B64','')
     if seed and not db.one('SELECT id FROM campaigns LIMIT 1'):
         load_seed(wf,lambda name,product,value_prop:new_campaign(Campaign(name=name,product=product,value_prop=value_prop))['id'],seed)
+    # Same reason: re-read real Gmail/Calendar activity on every cold start, off the request path.
+    if public_host and app.state.google.has_token():
+        def background():
+            try:app.state.sync_all()
+            except Exception:pass
+        threading.Thread(target=background,daemon=True).start()
     return app
 
 
