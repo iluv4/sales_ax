@@ -23,6 +23,7 @@ from .sheet_import import read_csv, plan, import_snapshot, PIPELINE_COLUMNS, HIS
 from .analytics import funnel as cohort_funnel
 from .seed import load as load_seed
 from .oauth import hosted_store_ready
+from .quick import register as register_quick
 
 ROOT=Path(__file__).resolve().parents[1]
 
@@ -434,6 +435,7 @@ def create_app(db_path=None,gmail_factory=None):
 
     from .integrations import register
     register(app,wf,custom_gmail=gmail_factory is not None)
+    register_quick(app,app.state.google,lambda:wf.gmail_factory())
     from .persona_api import register as register_personas
     register_personas(app,wf)
     from .outbound import register as register_outbound
@@ -441,6 +443,8 @@ def create_app(db_path=None,gmail_factory=None):
 
     @app.get('/')
     def index(): return FileResponse(ROOT/'web'/'index.html')
+    @app.get('/quick')
+    def quick_page(): return FileResponse(ROOT/'web'/'quick.html')
     app.mount('/static',StaticFiles(directory=ROOT/'web'),name='static')
 
     # Serverless storage resets on cold start: reload the sheet snapshot kept in an encrypted env var (never in git).

@@ -1,0 +1,10 @@
+body.quick header{padding:0 38px}.brand-inline{font-weight:800;color:#122d28;font-size:15px}
+.steps{display:grid;grid-template-columns:1.3fr 1fr 1fr;gap:20px;margin-bottom:22px;align-items:start}.steps .card{margin:0}
+.step h2{display:flex;align-items:center;gap:10px;font-size:16px;margin-bottom:16px}.num{display:grid;place-items:center;width:26px;height:26px;border-radius:50%;background:#d6efe0;color:#153f30;font-size:13px}
+.step label,.step .sub,.mini{font-size:13px}.step input{font-size:14px}.mini{color:#546b61;line-height:2;padding-left:18px;margin:14px 0 0}
+.brochure-now{margin:14px 0;padding:12px;border:1px dashed #cfdcd5;border-radius:8px;font-size:13px;color:#546b61;overflow-wrap:anywhere}
+.button-link{display:inline-block;border:1px solid #d8e2df;border-radius:8px;padding:10px 16px;font-weight:600;background:#fff;color:#354b45}
+#q-rows td{font-size:13px;vertical-align:top}#q-rows td small{font-size:12px}.evidence-cell{max-width:420px}.row-actions{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}.row-actions button{padding:7px 11px;font-size:12px}
+button.busy{position:relative;color:transparent}button.busy:after{content:'…';position:absolute;inset:0;display:grid;place-items:center;color:#354b45}.primary.busy:after{color:#fff}
+dialog label{font-size:13px}dialog input,dialog textarea{font-size:14px}
+@media(max-width:1000px){.steps{grid-template-columns:1fr}body.quick header{padding:0 18px}}

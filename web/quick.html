@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>빠른 영업 · 모범AI</title>
+<link rel="stylesheet" href="/static/style.css"><link rel="stylesheet" href="/static/quick.css"></head>
+<body class="quick">
+<header><div><a class="brand-inline" href="/">모범AI</a><span>/</span>빠른 영업</div><div class="header-right"><span class="pill" id="q-status">불러오는 중</span><a href="/#settings">Google 연결</a></div></header>
+<main>
+  <div class="page-heading"><div><p class="eyebrow">QUICK OUTREACH</p><h1>찾고 → 정리하고 → 개인화 메일 초안까지</h1>
+    <p class="sub">AI가 웹에서 사람과 공개 이메일을 찾아 표에 쌓고, 올려 둔 소개서를 바탕으로 한 명씩 메일을 씁니다. 마지막 단계는 Gmail <b>초안</b>까지만 만들고, 발송·예약은 Gmail에서 직접 합니다.</p></div>
+    <div class="actions"><a class="button-link" href="/api/quick/rows.csv">CSV(시트용) 내려받기</a></div></div>
+
+  <section class="steps">
+    <form class="card step" id="q-search"><h2><span class="num">1</span>사람 찾기</h2>
+      <label for="q-query">누구를 찾을까요?</label>
+      <input id="q-query" required minlength="2" placeholder="예: 인스타에서 활동하는 세무사, 해외구매대행 대표, 메타 광고 강사">
+      <div class="split spaced"><div><label for="q-count">인원</label><input id="q-count" type="number" min="1" max="15" value="8"></div>
+        <div><label for="q-max">팔로워 상한</label><input id="q-max" type="number" min="0" step="1000" value="10000"></div></div>
+      <p class="sub spaced">팔로워 1만 명 이하만 찾는 것이 기본입니다(비우면 제한 없음). 검색은 1~2분 걸릴 수 있습니다.</p>
+      <button class="primary spaced" id="q-search-btn">찾아서 표에 추가</button></form>
+
+    <form class="card step" id="q-brochure"><h2><span class="num">2</span>소개서 올리기</h2>
+      <p class="sub">메일 내용의 근거가 되고, Gmail 초안에 PDF로 첨부됩니다.</p>
+      <div class="brochure-now" id="q-brochure-now">아직 없음</div>
+      <input id="q-file" type="file" accept="application/pdf" required>
+      <button class="spaced" id="q-upload-btn">소개서 저장</button></form>
+
+    <div class="card step"><h2><span class="num">3</span>메일 쓰고 초안 만들기</h2>
+      <p class="sub">표의 각 줄에서 <b>메일 쓰기</b> → 내용 확인·수정 → <b>Gmail 초안</b>. 이메일이 비어 있으면 직접 입력하세요.</p>
+      <ol class="mini"><li>메일 쓰기: 근거 + 소개서로 개인화</li><li>Gmail 초안: 소개서 PDF 첨부</li><li>Gmail에서 예약 발송</li></ol></div>
+  </section>
+
+  <section class="card"><div class="card-title"><div><h2>리드 목록</h2><p class="sub" id="q-count-label"></p></div></div>
+    <div class="table-wrap"><table><thead><tr><th>상태</th><th>사람</th><th>연락처</th><th>연락 근거</th><th></th></tr></thead><tbody id="q-rows"></tbody></table></div>
+  </section>
+</main>
+<dialog id="q-editor"><h2 id="q-editor-title">메일</h2>
+  <label for="q-to">받는 사람 이메일</label><input id="q-to" type="email">
+  <label class="spaced" for="q-subject">제목</label><input id="q-subject">
+  <label class="spaced" for="q-body">본문</label><textarea id="q-body" rows="14"></textarea>
+  <div class="form-actions"><button type="button" id="q-close">닫기</button><button type="button" id="q-redo">다시 쓰기</button><button type="button" id="q-save">저장</button><button type="button" class="primary" id="q-gmail">Gmail 초안 만들기</button></div>
+</dialog>
+<div id="toast"></div>
+<script src="/static/quick.js"></script>
+</body></html>
