@@ -1,4 +1,6 @@
 import os
+import json
+from datetime import datetime,timedelta,timezone
 from google.oauth2.credentials import Credentials
 from googleapiclient.discovery import build
 from .gmail import GmailDraftClient
@@ -22,7 +24,9 @@ def sheets_service():
 def sync_calendar(wf,service=None):
     service=service or calendar_service();db=wf.db;created=0;unmatched=0;token=None
     while True:
-        response=service.events().list(calendarId='primary',singleEvents=True,maxResults=250,pageToken=token).execute()
+        response=service.events().list(calendarId='primary',singleEvents=True,maxResults=250,pageToken=token,
+            timeMin=(datetime.now(timezone.utc)-timedelta(days=30)).isoformat(),
+            timeMax=(datetime.now(timezone.utc)+timedelta(days=90)).isoformat()).execute()
         for event in response.get('items',[]):
             external=event['id'];old=db.one('SELECT * FROM meetings WHERE external_id=?',(external,))
             if old:
@@ -34,7 +38,13 @@ def sync_calendar(wf,service=None):
             matches=db.rows('SELECT l.id,c.email FROM leads l JOIN contacts c ON c.id=l.contact_id')
             matches=[l for l in matches if l['email'] in attendees]
             start=event.get('start',{}).get('dateTime')
-            if len(matches)!=1 or not start or event.get('status')=='cancelled':unmatched+=1;continue
+            if len(matches)!=1 or not start or event.get('status')=='cancelled':
+                unmatched+=1
+                with db.transaction():
+                    db.execute('INSERT INTO source_records(provider,external_id,payload,imported_at) VALUES(?,?,?,?) '
+                        'ON CONFLICT(provider,external_id) DO UPDATE SET payload=excluded.payload,imported_at=excluded.imported_at',
+                        ('calendar_unmatched',external,json.dumps({'summary':event.get('summary',''),'starts_at':start,'status':event.get('status')},ensure_ascii=False),now()))
+                continue
             with db.transaction():
                 db.execute('INSERT INTO meetings(lead_id,external_id,starts_at) VALUES(?,?,?)',(matches[0]['id'],external,start))
                 db.log('calendar_booking_imported',{'event_id':external},matches[0]['id'])

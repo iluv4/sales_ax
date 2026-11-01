@@ -9,6 +9,12 @@ def migrate(conn):
     CREATE TABLE IF NOT EXISTS source_records(id INTEGER PRIMARY KEY,provider TEXT NOT NULL,external_id TEXT NOT NULL,lead_id INTEGER REFERENCES leads(id),payload TEXT NOT NULL,imported_at TEXT NOT NULL,UNIQUE(provider,external_id));
     CREATE TABLE IF NOT EXISTS integration_health(provider TEXT PRIMARY KEY,state TEXT NOT NULL,detail TEXT NOT NULL,checked_at TEXT NOT NULL);
     CREATE TABLE IF NOT EXISTS send_attempts(id INTEGER PRIMARY KEY,draft_id INTEGER NOT NULL REFERENCES drafts(id),version INTEGER NOT NULL,status TEXT NOT NULL,gmail_id TEXT,thread_id TEXT,at TEXT NOT NULL,UNIQUE(draft_id,version));
+    CREATE TABLE IF NOT EXISTS persona_sessions(id INTEGER PRIMARY KEY,title TEXT NOT NULL,version INTEGER NOT NULL DEFAULT 0,approved_version INTEGER,campaign_id INTEGER REFERENCES campaigns(id),created_at TEXT NOT NULL);
+    CREATE TABLE IF NOT EXISTS persona_messages(id INTEGER PRIMARY KEY,session_id INTEGER NOT NULL REFERENCES persona_sessions(id),role TEXT NOT NULL,content TEXT NOT NULL,created_at TEXT NOT NULL);
+    CREATE TABLE IF NOT EXISTS persona_versions(id INTEGER PRIMARY KEY,session_id INTEGER NOT NULL REFERENCES persona_sessions(id),version INTEGER NOT NULL,payload TEXT NOT NULL,provider TEXT NOT NULL,created_at TEXT NOT NULL,UNIQUE(session_id,version));
+    CREATE TABLE IF NOT EXISTS jobs(id INTEGER PRIMARY KEY,kind TEXT NOT NULL,idempotency_key TEXT NOT NULL UNIQUE,payload TEXT NOT NULL,status TEXT NOT NULL DEFAULT 'PENDING',attempts INTEGER NOT NULL DEFAULT 0,result TEXT,error TEXT,created_at TEXT NOT NULL,started_at TEXT,finished_at TEXT);
+    CREATE TABLE IF NOT EXISTS meeting_notes(id INTEGER PRIMARY KEY,meeting_id INTEGER NOT NULL REFERENCES meetings(id),source_text TEXT NOT NULL,summary TEXT NOT NULL,actions TEXT NOT NULL,provider TEXT NOT NULL,created_at TEXT NOT NULL);
+    CREATE TABLE IF NOT EXISTS scheduled_deliveries(id INTEGER PRIMARY KEY,draft_id INTEGER NOT NULL UNIQUE REFERENCES drafts(id),version INTEGER NOT NULL,recipient TEXT NOT NULL,scheduled_at TEXT NOT NULL,status TEXT NOT NULL DEFAULT 'SCHEDULED',approved_by TEXT NOT NULL,gmail_id TEXT,thread_id TEXT,error TEXT,created_at TEXT NOT NULL);
     ''')
     additions={
         'campaigns':{'offer_id':'INTEGER REFERENCES offers(id)','icp_id':'INTEGER REFERENCES icp_profiles(id)','owner_id':"TEXT NOT NULL DEFAULT 'local-operator'",'status':"TEXT NOT NULL DEFAULT 'READY_FOR_DISCOVERY'"},
@@ -23,4 +29,5 @@ def migrate(conn):
             if name not in existing: conn.execute(f'ALTER TABLE {table} ADD COLUMN {name} {type_}')
     conn.execute('INSERT OR IGNORE INTO schema_migrations(version) VALUES(1)')
     conn.execute('INSERT OR IGNORE INTO schema_migrations(version) VALUES(2)')
+    conn.execute('INSERT OR IGNORE INTO schema_migrations(version) VALUES(3)')
     conn.commit()

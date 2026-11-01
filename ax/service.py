@@ -276,7 +276,7 @@ class Workflow:
                 self.db.execute("UPDATE tasks SET status='canceled' WHERE lead_id=? AND kind='followup_email'",(lid,))
                 self.db.execute("UPDATE leads SET stage='IN_CONVERSATION' WHERE id=? AND stage IN ('CONTACTED','FOLLOWUP_DUE','NO_REPLY')",(lid,))
             self.db.log('message_imported',{'gmail_id':item['gmail_id'],'direction':direction,'intent':intent},lid)
-        if intent in ('OPT_OUT','REJECTED'): self.suppress(lid,intent)
+        if intent in ('OPT_OUT','REJECTED','BOUNCE'): self.suppress(lid,intent)
         return {'created':True,'lead_id':lid}
 
     def complete_meeting(self,mid,notes,actor,confirmed,next_step):

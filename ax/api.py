@@ -16,6 +16,9 @@ from .db import DB, now
 from .service import Workflow, email_address, public_url
 from .gmail import GmailDraftClient
 from .legacy import campaign_config, research_prompt, compose_body
+from .timeline import lead_timeline
+from .sheet_import import read_csv, plan, import_snapshot, PIPELINE_COLUMNS, HISTORY_COLUMNS
+from .analytics import funnel as cohort_funnel
 
 ROOT=Path(__file__).resolve().parents[1]
 
@@ -198,7 +201,22 @@ def create_app(db_path=None,gmail_factory=None):
             'meetings':db.rows('SELECT * FROM meetings WHERE lead_id=? ORDER BY starts_at DESC',(lid,)),
             'tasks':db.rows('SELECT * FROM tasks WHERE lead_id=?',(lid,)),
             'deal':db.one('SELECT * FROM deals WHERE lead_id=?',(lid,)),
-            'timeline':db.rows('SELECT * FROM audit_logs WHERE lead_id=? ORDER BY id DESC',(lid,))}
+            'timeline':lead_timeline(wf,lid),
+            'audit':db.rows('SELECT * FROM audit_logs WHERE lead_id=? ORDER BY id DESC',(lid,))}
+
+    @app.get('/api/leads/{lid}/timeline')
+    def timeline(lid:int): return lead_timeline(wf,lid)
+
+    @app.post('/api/imports/sheet-snapshot')
+    async def sheet_snapshot(campaign_id:int=Form(...),confirm:bool=Form(False),pipeline:UploadFile=File(...),history:UploadFile|None=File(None)):
+        def text(f):
+            content=f.file.read(5*1024*1024+1)
+            if len(content)>5*1024*1024: raise ValueError('CSV는 5MB 이하이어야 합니다.')
+            try: return content.decode('utf-8-sig')
+            except UnicodeError: raise ValueError('UTF-8 CSV를 사용하세요.')
+        snapshot={'pipeline':read_csv(text(pipeline),PIPELINE_COLUMNS),'history':read_csv(text(history),HISTORY_COLUMNS) if history and history.filename else []}
+        wf.campaign(campaign_id)
+        return import_snapshot(wf,snapshot,campaign_id) if confirm else plan(wf,snapshot)
 
     @app.post('/api/leads/{lid}/verify')
     def verify(lid:int,data:Verify):
@@ -362,7 +380,10 @@ def create_app(db_path=None,gmail_factory=None):
     def messages(): return db.rows('SELECT m.*,c.name FROM messages m JOIN leads l ON l.id=m.lead_id JOIN contacts c ON c.id=l.contact_id ORDER BY occurred_at DESC')
 
     @app.get('/api/analytics/funnel')
-    def funnel(): return wf.funnel()
+    def funnel(campaign_id:int|None=None,industry:str='',start:str='',end:str=''):
+        # Filters use the first-real-send cohort; without filters keep the whole-DB view.
+        if campaign_id is None and not industry and not start and not end: return wf.funnel()
+        return cohort_funnel(db,campaign_id,industry or None,start or None,end or None)
 
     @app.get('/api/audit-logs')
     def audits(): return db.rows('SELECT * FROM audit_logs ORDER BY id DESC LIMIT 500')
@@ -388,6 +409,13 @@ def create_app(db_path=None,gmail_factory=None):
                 (name,file.filename,content,hashlib.sha256(content).hexdigest(),json.dumps(mapping,ensure_ascii=False),now())).lastrowid
             db.log('template_registered',{'id':tid,'rendering_enabled':False})
         return {'id':tid,'rendering_enabled':False}
+
+    from .integrations import register
+    register(app,wf,custom_gmail=gmail_factory is not None)
+    from .persona_api import register as register_personas
+    register_personas(app,wf)
+    from .outbound import register as register_outbound
+    register_outbound(app,wf)
 
     @app.get('/')
     def index(): return FileResponse(ROOT/'web'/'index.html')

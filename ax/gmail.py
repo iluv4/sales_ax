@@ -84,3 +84,17 @@ class GmailDraftClient:
 
     def thread_messages(self, thread_id):
         return self.service.users().threads().get(userId='me', id=thread_id, format='full').execute().get('messages', [])
+
+    def sent_for(self,recipient,limit=100):
+        result=[];token=None
+        while len(result)<limit:
+            page=self.service.users().messages().list(userId='me',q='in:sent to:'+recipient,maxResults=min(100,limit-len(result)),pageToken=token).execute()
+            for item in page.get('messages',[]):
+                result.append(self.service.users().messages().get(userId='me',id=item['id'],format='metadata').execute())
+            token=page.get('nextPageToken')
+            if not token:break
+        return result
+
+    def send_draft(self,draft_id):
+        # Called only by the explicit approved-delivery dispatcher.
+        return self.service.users().drafts().send(userId='me',body={'id':draft_id}).execute()

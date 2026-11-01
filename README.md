@@ -17,7 +17,17 @@ python run.py
 python checks.py
 ```
 
-현재 검증: 원본 sales 28개, sales_saas_prompt 16개, 통합 21개 — **65개 통과**. 모든 발송 테스트는 가짜 Gmail 클라이언트를 사용합니다.
+현재 검증(2026-11-02): 원본 sales 28개, sales_saas_prompt 16개, 통합 36개 — **80개 통과**. 모든 발송 테스트는 가짜 Gmail 클라이언트를 사용합니다.
+
+## 2026-11-02 추가분 (Claude Code)
+
+| 기능 | 위치 | 상태 |
+|---|---|---|
+| 기존 통합 시트 읽기 전용 가져오기: 탭 CSV 업로드 → 미리보기 → 확정. 같은 리드ID는 다시 만들지 않음 | `ax/sheet_import.py`, `POST /api/imports/sheet-snapshot`, 고객 발굴 화면 `기존 시트 가져오기` | 가상 데이터 테스트 통과 · 실제 9명 시트는 아직 가져오지 않음 |
+| 고객 통합 타임라인: 근거·제안서·초안·발신/수신·문서 링크·미팅 예약/실제 완료·계약을 출처·실행자·검증 정도와 함께 시간순 표시 | `ax/timeline.py`, `GET /api/leads/{id}/timeline`, 고객 360° 화면 | 동작 |
+| 퍼널 필터: `campaign_id`, `industry`, `start`, `end`(최초 실제 발송일 코호트) | `GET /api/analytics/funnel` | API 동작 · 화면 필터는 미연결 |
+
+시트 가져오기 상태는 `MANUAL`로 표시합니다(파일 가져오기이지 Google API 실시간 연결이 아님). 시트의 발송 기록에는 Gmail 스레드 ID가 없으므로 타임라인에 `sent_record_only`로 표시되고, `기존 발신 메일 연결`(Gmail OAuth 후)로 스레드를 채웁니다.
 
 ## 현재 동작 범위
 
