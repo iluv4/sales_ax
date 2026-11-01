@@ -1,5 +1,7 @@
+import base64
 import csv
 import hashlib
+import hmac
 import io
 import json
 import os
@@ -126,14 +128,32 @@ def create_app(db_path=None,gmail_factory=None):
     db=DB(db_path or os.getenv('SALES_AX_DB',str(ROOT/'data'/'sales-ax.db')))
     wf=Workflow(db,gmail_factory or GmailDraftClient.configured)
     app.state.workflow=wf
+    # Hosted demo: one extra allowed host, every request behind a shared password, Google OAuth stays local-only.
+    public_host=os.getenv('SALES_AX_PUBLIC_HOST','').strip().lower()
+    demo_password=os.getenv('SALES_AX_DEMO_PASSWORD','')
+    if public_host and len(demo_password)<12:raise RuntimeError('공개 데모에는 12자 이상의 SALES_AX_DEMO_PASSWORD가 필요합니다.')
+    origins={'http://127.0.0.1:8765','http://localhost:8765'}|({'https://'+public_host} if public_host else set())
+
+    def demo_authorized(header):
+        scheme,_,value=header.partition(' ')
+        if scheme.lower()!='basic':return False
+        try:password=base64.b64decode(value,validate=True).decode().partition(':')[2]
+        except (ValueError,UnicodeError):return False
+        return hmac.compare_digest(password.encode(),demo_password.encode())
 
     @app.middleware('http')
     async def local_guard(request:Request,call_next):
         # Local single-operator MVP: loopback binding, host/origin validation, no cross-site mutation.
-        if request.headers.get('host','').split(':')[0] not in ('127.0.0.1','localhost','testserver'):
+        host=request.headers.get('host','').split(':')[0].lower()
+        if host not in ('127.0.0.1','localhost','testserver') and not (public_host and host==public_host):
             return JSONResponse({'detail':'로컬 호스트만 허용합니다.'},status_code=403)
+        if public_host:
+            if not demo_authorized(request.headers.get('authorization','')):
+                return JSONResponse({'detail':'데모 비밀번호가 필요합니다.'},status_code=401,headers={'WWW-Authenticate':'Basic realm="Sales AX demo", charset="UTF-8"'})
+            if request.url.path.startswith('/api/integrations/google'):
+                return JSONResponse({'detail':'공개 데모에서는 Google 계정 연결을 막아 두었습니다. 로컬 앱에서 연결하세요.'},status_code=403)
         origin=request.headers.get('origin')
-        if request.method not in ('GET','HEAD','OPTIONS') and origin and origin not in ('http://127.0.0.1:8765','http://localhost:8765'):
+        if request.method not in ('GET','HEAD','OPTIONS') and origin and origin not in origins:
             return JSONResponse({'detail':'외부 출처 요청 차단'},status_code=403)
         response=await call_next(request)
         response.headers['X-Content-Type-Options']='nosniff'
@@ -148,7 +168,7 @@ def create_app(db_path=None,gmail_factory=None):
 
     @app.get('/api/status')
     def status():
-        return {'send_enabled':False,'mode':'LOCAL_SINGLE_OPERATOR','gmail_configured':bool(os.getenv('GMAIL_AUTHORIZED_USER_FILE') or os.getenv('GOOGLE_APPLICATION_CREDENTIALS')),
+        return {'send_enabled':False,'mode':'HOSTED_DEMO' if public_host else 'LOCAL_SINGLE_OPERATOR','gmail_configured':bool(os.getenv('GMAIL_AUTHORIZED_USER_FILE') or os.getenv('GOOGLE_APPLICATION_CREDENTIALS')),
                 'ai_configured':bool(os.getenv('ANTHROPIC_API_KEY')),'ai_provider':'legacy-anthropic (optional adapter)',
                 'upstreams':{'sales':'670448c013ecfdd0629dafbcf9a2cc1c05398e7f','sales_saas_prompt':'674375f069aba1c00a16678afbef6b473a989dee'}}
 
